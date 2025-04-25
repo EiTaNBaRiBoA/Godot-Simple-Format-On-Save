@@ -49,7 +49,8 @@ const KEYWORDS = [
 
 static func apply(code: String) -> String:
 	var string_regex = RegEx.new()
-	string_regex.compile(r"([\"'])(?:(?=(\\?))\2.)*?\1")
+	string_regex.compile(r'(?<!#)("""|\'\'\'|"|\')((?:.|\n)*?)\1')
+
 	var string_matches = string_regex.search_all(code)
 	var string_map = {}
 
@@ -106,14 +107,15 @@ static func _format_operators_and_commas(code: String) -> String:
 		code = new_code
 		new_code = indent_regex.sub(code, "\t", true)
 
-	var symbols_regex = "(" + ")|(".join(SYMBOLS) + ")"
-	var symbols_operator_regex = RegEx.create_from_string(" *?(" + symbols_regex + ") *")
+	var symbols_regex = "(" + ") | (".join(SYMBOLS) + ")"
+	symbols_regex = " * ?(" + symbols_regex + ") * "
+	var symbols_operator_regex = RegEx.create_from_string(symbols_regex)
 	code = symbols_operator_regex.sub(code, " $1 ", true)
 
 	# ": =" => ":="
 	code = RegEx.create_from_string(r": *=").sub(code, ":=", true)
 
-	# "a (" => "a("
+	# "a(" => "a (" 
 	code = RegEx.create_from_string(r"(?<=[\w\)\]]) *([\(:,])(?!=)").sub(code, "$1", true)
 
 	# "( a" => "(a"
@@ -129,17 +131,16 @@ static func _format_operators_and_commas(code: String) -> String:
 	var keyword_operator_regex = RegEx.create_from_string(r"(?<=[ \)\]])(" + keywoisrd_regex + r")(?=[ \(\[])")
 	code = keyword_operator_regex.sub(code, " $1 ", true)
 
-	# tab "a 	=" => "a ="
-
-	code = RegEx.create_from_string(r"(\t*.*?)\t*").sub(code, "$1", true)
+	# tab "a\t=" => "a ="
+	code = RegEx.create_from_string(r"(\t*. * ?)\t * ").sub(code, "$1", true)
 
 	#trim
 	code = RegEx.create_from_string("[ \t]*\n").sub(code, "\n", true)
 
-	# "    " => " "
+	# "  " => " "
 	code = RegEx.create_from_string(" +").sub(code, " ", true)
 
-	# "= - a" => "= -a"
+	# "= -a" => "= -a"
 	code = RegEx.create_from_string(r"([=,(] ?)- ").sub(code, "$1-", true)
 
 	return code

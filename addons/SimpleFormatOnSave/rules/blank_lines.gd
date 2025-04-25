@@ -16,13 +16,13 @@ static func apply(code: String) -> String:
 static func _blank_for_func_class(code: String) -> String:
 	var assignment_regex = RegEx.create_from_string(r".*=.*")
 	var statement_regex = RegEx.create_from_string(r"\s+(if|for|while|match)[\s|\(].*")
-	var misc_statement_regex = RegEx.create_from_string(r"\s+(else|elif).*")
+	var misc_statement_regex = RegEx.create_from_string(r"\s+(else|elif|\}|\]).*")
 	var func_class_regex = RegEx.create_from_string(r".*(func|class) .*")
 	var comment_line_regex = RegEx.create_from_string(r"^\s*#")
 	var empty_line_regex = RegEx.create_from_string(r"^\s+$")
 	var lines := code.split('\n')
 	var modified_lines: Array[String] = []
-
+	
 	for line: String in lines:
 		# Spaces between functions & classes
 		if func_class_regex.search(line):
@@ -42,6 +42,7 @@ static func _blank_for_func_class(code: String) -> String:
 
 				if assignment_regex.search(modified_lines[i]) and not statement_regex.search(modified_lines[i]):
 					modified_lines.insert(i + 1, "")
+
 				else:
 					pass
 
