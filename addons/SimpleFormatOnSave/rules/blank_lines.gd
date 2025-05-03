@@ -22,15 +22,19 @@ static func _blank_for_func_class(code: String) -> String:
 	var empty_line_regex = RegEx.create_from_string(r"^\s+$")
 	var lines := code.split('\n')
 	var modified_lines: Array[String] = []
-	
+
 	for line: String in lines:
 		# Spaces between functions & classes
 		if func_class_regex.search(line):
 			if modified_lines.size() > 0:
 				var i := modified_lines.size() - 1
 
-				while (comment_line_regex.search(modified_lines[i])):
+				while i > 0 and comment_line_regex.search(modified_lines[i]):
 					i -= 1
+
+				if i == 0:
+					modified_lines.append(line)
+					continue
 
 				modified_lines.insert(i + 1, "")
 				modified_lines.insert(i + 1, "")

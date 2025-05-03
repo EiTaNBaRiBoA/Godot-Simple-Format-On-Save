@@ -43,4 +43,3 @@ This addon combines the functionality of
 🐰 [simple_gdscript_formatter
 ](https://github.com/madwind/simple_gdscript_formatter/blob/main/project.godot) by [madwind](https://github.com/madwind)
 🐰 [Format On Save](https://github.com/ryan-haskell/gdformat-on-save) by [ryan-haskell](https://github.com/ryan-haskell) 
-
