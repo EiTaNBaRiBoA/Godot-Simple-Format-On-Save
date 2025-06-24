@@ -113,7 +113,7 @@ static func _format_operators_and_commas(code: String) -> String:
 	code = symbols_operator_regex.sub(code, " $1 ", true)
 
 	# ": =" => ":="
-	code = RegEx.create_from_string(r": *=").sub(code, ":=", true)
+	code = RegEx.create_from_string(r" *: *= *").sub(code, " := ", true)
 
 	# "a(" => "a (" 
 	code = RegEx.create_from_string(r"(?<=[\w\)\]]) *([\(:,])(?!=)").sub(code, "$1", true)

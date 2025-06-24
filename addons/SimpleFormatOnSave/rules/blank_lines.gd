@@ -15,8 +15,8 @@ static func apply(code: String) -> String:
 
 static func _blank_for_func_class(code: String) -> String:
 	var assignment_regex = RegEx.create_from_string(r".*=.*")
-	var statement_regex = RegEx.create_from_string(r"\s+(if|for|while|match)[\s|\(].*")
-	var misc_statement_regex = RegEx.create_from_string(r"\s+(else|elif|\}|\]).*")
+	var statement_regex = RegEx.create_from_string(r"^\s+(if|for|while|match)[\s|\(].*")
+	var misc_statement_regex = RegEx.create_from_string(r"\s+(else|elif|\}|\]|\)|\,).*")
 	var func_class_regex = RegEx.create_from_string(r".*(func|class) .*")
 	var comment_line_regex = RegEx.create_from_string(r"^\s*#")
 	var empty_line_regex = RegEx.create_from_string(r"^\s+$")
@@ -44,7 +44,9 @@ static func _blank_for_func_class(code: String) -> String:
 			if modified_lines.size() > 0:
 				var i := modified_lines.size() - 1
 
-				if assignment_regex.search(modified_lines[i]) and not statement_regex.search(modified_lines[i]):
+				if assignment_regex.search(modified_lines[i]) \
+					and not func_class_regex.search(modified_lines[i]) \
+					and not statement_regex.search(modified_lines[i]):
 					modified_lines.insert(i + 1, "")
 
 				else:
@@ -57,7 +59,7 @@ static func _blank_for_func_class(code: String) -> String:
 			if modified_lines.size() > 0:
 				var i := modified_lines.size() - 1
 
-				if modified_lines[i].count("\t") > indent_count:
+				if modified_lines[i].count("\t") > indent_count and not misc_statement_regex.search(modified_lines[i]):
 					modified_lines.insert(i + 1, "")
 
 		modified_lines.append(line)
